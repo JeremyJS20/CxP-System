@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Usuarios (Auth) ───
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  nombre    String   @db.VarChar(255)
+  rol       String   @default("USUARIO") @db.VarChar(20)
+  estado    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+// ─── Catálogo de Conceptos de Pago ───
+model ConceptoPago {
+  id             Int         @id @default(autoincrement())
+  descripcion    String      @db.VarChar(255)
+  cuentaContable String      @db.VarChar(50)
+  estado         Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  documentos     Documento[]
+
+  @@map("conceptos_pago")
+}
+
+// ─── Maestro de Proveedores ───
+model Proveedor {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @db.VarChar(255)
+  tipoPersona String      @db.VarChar(10)
+  cedulaRnc   String      @unique @db.VarChar(15)
+  estado      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  documentos  Documento[]
+
+  @@map("proveedores")
+}
+
+// ─── Documentos por Pagar ───
+model Documento {
+  id              Int           @id @default(autoincrement())
+  noDocumento     String        @unique @db.VarChar(30)
+  noFactura       String        @db.VarChar(30)
+  fechaDocumento  DateTime
+  monto           Decimal       @db.Decimal(18, 2)
+  fechaRegistro   DateTime      @default(now())
+  estado          String        @default("PENDIENTE") @db.VarChar(20)
+  estadoContable  String        @default("PENDIENTE") @db.VarChar(20)
+  proveedorId     Int
+  conceptoId      Int
+  proveedor       Proveedor     @relation(fields: [proveedorId], references: [id])
+  concepto        ConceptoPago  @relation(fields: [conceptoId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("documentos")
+}
