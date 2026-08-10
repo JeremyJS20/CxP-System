@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { CreateProveedorSchema, UpdateProveedorSchema } from '@cxp/common';
 import { useProveedores } from '@/Presentation/Hooks/useProveedores';
 import FormModal from '@/Presentation/Components/FormModal';
 import DeleteConfirm from '@/Presentation/Components/DeleteConfirm';
@@ -13,6 +14,7 @@ export default function ProveedoresPage() {
   const [editItem, setEditItem] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [cedulaError, setCedulaError] = useState<string | null>(null);
 
   const [nombre, setNombre] = useState('');
   const [tipoPersona, setTipoPersona] = useState<'FISICA' | 'JURIDICA'>('FISICA');
@@ -25,6 +27,7 @@ export default function ProveedoresPage() {
     setTipoPersona('FISICA');
     setCedulaRnc('');
     setEstado(true);
+    setCedulaError(null);
     setModalOpen(true);
   };
 
@@ -34,18 +37,31 @@ export default function ProveedoresPage() {
     setTipoPersona(item.tipoPersona);
     setCedulaRnc(item.cedulaRnc);
     setEstado(item.estado);
+    setCedulaError(null);
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCedulaError(null);
+
+    const payload = { nombre, tipoPersona, cedulaRnc, estado };
+    const parsed = (editItem ? UpdateProveedorSchema : CreateProveedorSchema).safeParse(payload);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const msg = issue && issue.path.includes('cedulaRnc') ? issue.message : 'Verifique los datos del formulario';
+      setCedulaError(msg);
+      showToast(msg, 'error');
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (editItem) {
-        await update(editItem.id, { nombre, tipoPersona, cedulaRnc, estado });
+        await update(editItem.id, payload);
         showToast('Proveedor actualizado', 'success');
       } else {
-        await create({ nombre, tipoPersona, cedulaRnc, estado });
+        await create(payload);
         showToast('Proveedor creado', 'success');
       }
       setModalOpen(false);
@@ -138,8 +154,22 @@ export default function ProveedoresPage() {
             </select>
           </div>
           <div>
-            <label style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: 6, display: 'block' }}>Cédula / RNC</label>
-            <input className="input-field" value={cedulaRnc} onChange={e => setCedulaRnc(e.target.value)} placeholder="000-0000000-0" required />
+            <label style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: 6, display: 'block' }}>
+              Cédula / RNC {tipoPersona === 'FISICA' ? '(11 dígitos)' : '(9 dígitos)'}
+            </label>
+            <input
+              className="input-field"
+              value={cedulaRnc}
+              onChange={e => { setCedulaRnc(e.target.value); setCedulaError(null); }}
+              placeholder={tipoPersona === 'FISICA' ? '000-0000000-0' : '00000000-0'}
+              style={cedulaError ? { borderColor: 'var(--accent-error)' } : undefined}
+              required
+            />
+            {cedulaError && (
+              <p style={{ fontSize: '0.75rem', color: 'var(--accent-error)', margin: '4px 0 0' }}>
+                {cedulaError}
+              </p>
+            )}
           </div>
           <div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', cursor: 'pointer', fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>

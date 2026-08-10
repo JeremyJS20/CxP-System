@@ -15,7 +15,7 @@ export const proveedorController = {
 
   async getProveedor(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await proveedorService.getById(id);
       return res.json({ success: true, data });
     } catch (error: any) {
@@ -38,7 +38,7 @@ export const proveedorController = {
 
   async updateProveedor(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const parsed = UpdateProveedorSchema.safeParse(req.body);
       if (!parsed.success) {
         return res.status(400).json({ success: false, error: 'Datos inválidos', details: parsed.error.flatten() });
@@ -52,7 +52,7 @@ export const proveedorController = {
 
   async deleteProveedor(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await proveedorService.delete(id);
       return res.json({ success: true, data: { message: 'Proveedor desactivado correctamente' } });
     } catch (error: any) {

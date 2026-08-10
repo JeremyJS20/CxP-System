@@ -37,15 +37,21 @@ async function main() {
   console.log('5 conceptos creados');
 
   // ── Proveedores ──
+  // Cédulas/RNCs válidos según algoritmo DGII (módulo 10 / módulo 11)
   const proveedoresData = [
-    { nombre: 'Ferretería El Rayo SRL', tipoPersona: 'JURIDICA', cedulaRnc: '101000001' },
-    { nombre: 'Transporte Fast CxA', tipoPersona: 'JURIDICA', cedulaRnc: '130000002' },
-    { nombre: 'Consultora Legal RD', tipoPersona: 'FISICA', cedulaRnc: '00100000001' },
+    { nombre: 'Ferretería El Rayo SRL', tipoPersona: 'JURIDICA', cedulaRnc: '100000004' },
+    { nombre: 'Transporte Fast CxA', tipoPersona: 'JURIDICA', cedulaRnc: '100000012' },
+    { nombre: 'Consultora Legal RD', tipoPersona: 'FISICA', cedulaRnc: '01000000008' },
   ];
 
   for (const p of proveedoresData) {
-    const existe = await prisma.proveedor.findUnique({ where: { cedulaRnc: p.cedulaRnc } });
-    if (!existe) {
+    let existe = await prisma.proveedor.findFirst({ where: { nombre: p.nombre } });
+    if (existe) {
+      await prisma.proveedor.update({
+        where: { id: existe.id },
+        data: { tipoPersona: p.tipoPersona, cedulaRnc: p.cedulaRnc },
+      });
+    } else {
       await prisma.proveedor.create({ data: p });
     }
   }

@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { isValidCedulaOrRNC } from './validators/cedulaRnc';
+
+export { isValidCedula, isValidRNC, isValidCedulaOrRNC } from './validators/cedulaRnc';
 
 // ─── Auth ───
 export const LoginSchema = z.object({
@@ -25,13 +28,27 @@ export const UpdateConceptoSchema = CreateConceptoSchema.partial();
 export type CreateConceptoPayload = z.infer<typeof CreateConceptoSchema>;
 
 // ─── Proveedor ───
-export const CreateProveedorSchema = z.object({
+const ProveedorFields = z.object({
   nombre: z.string().min(1, 'Nombre es requerido').max(255),
   tipoPersona: z.enum(['FISICA', 'JURIDICA'], { message: 'Tipo debe ser FISICA o JURIDICA' }),
   cedulaRnc: z.string().min(9, 'Cédula/RNC inválido').max(15),
   estado: z.boolean().default(true),
 });
-export const UpdateProveedorSchema = CreateProveedorSchema.partial();
+
+const validarCedulaRnc = (data: { tipoPersona: 'FISICA' | 'JURIDICA'; cedulaRnc: string }) =>
+  isValidCedulaOrRNC(data.cedulaRnc, data.tipoPersona);
+
+export const CreateProveedorSchema = ProveedorFields.refine(validarCedulaRnc, {
+  message: 'La cédula/RNC no es válida para el tipo de persona seleccionado',
+  path: ['cedulaRnc'],
+});
+export const UpdateProveedorSchema = ProveedorFields.partial().refine(
+  data => (data.tipoPersona && data.cedulaRnc ? validarCedulaRnc(data as any) : true),
+  {
+    message: 'La cédula/RNC no es válida para el tipo de persona seleccionado',
+    path: ['cedulaRnc'],
+  }
+);
 export type CreateProveedorPayload = z.infer<typeof CreateProveedorSchema>;
 
 // ─── Documento por Pagar ───

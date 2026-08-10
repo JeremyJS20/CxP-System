@@ -26,7 +26,7 @@ export const documentoController = {
 
   async getDocumento(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await documentoService.getById(id);
       return res.json({ success: true, data });
     } catch (error: any) {
@@ -49,7 +49,7 @@ export const documentoController = {
 
   async updateDocumento(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const parsed = UpdateDocumentoSchema.safeParse(req.body);
       if (!parsed.success) {
         return res.status(400).json({ success: false, error: 'Datos inválidos', details: parsed.error.flatten() });
@@ -63,7 +63,7 @@ export const documentoController = {
 
   async deleteDocumento(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await documentoService.delete(id);
       return res.json({ success: true, data: { message: 'Documento eliminado correctamente' } });
     } catch (error: any) {
@@ -87,7 +87,7 @@ export const documentoController = {
 
   async contabilizarDocumento(req: AuthRequest, res: Response) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const result = await contabilidadService.contabilizarDocumento(id);
       return res.json({ success: true, data: result });
     } catch (error: any) {
