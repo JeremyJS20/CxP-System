@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_DIRECT")
 }
 
 // ─── Usuarios (Auth) ───
@@ -23,9 +24,10 @@ model User {
 // ─── Catálogo de Conceptos de Pago ───
 model ConceptoPago {
   id             Int         @id @default(autoincrement())
-  descripcion    String      @db.VarChar(255)
-  cuentaContable String      @db.VarChar(50)
-  estado         Boolean     @default(true)
+  descripcion     String      @db.VarChar(255)
+  cuentaDebitoId  Int
+  cuentaCreditoId Int
+  estado          Boolean     @default(true)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   documentos     Documento[]
@@ -57,6 +59,7 @@ model Documento {
   fechaRegistro   DateTime      @default(now())
   estado          String        @default("PENDIENTE") @db.VarChar(20)
   estadoContable  String        @default("PENDIENTE") @db.VarChar(20)
+  respuestaContable Json?
   proveedorId     Int
   conceptoId      Int
   proveedor       Proveedor     @relation(fields: [proveedorId], references: [id])

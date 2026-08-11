@@ -9,7 +9,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run dev -w apps/backend",
     "dev:frontend": "npm run dev -w apps/frontend",
-    "build": "npm run build -w apps/frontend",
+    "build": "prisma generate --schema=apps/backend/prisma/schema.prisma && npm run build -w apps/frontend",
     "db:migrate": "npm run db:migrate -w apps/backend",
     "db:generate": "npm run db:generate -w apps/backend"
   },

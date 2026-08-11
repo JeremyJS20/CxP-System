@@ -13,11 +13,14 @@ export const conceptoService = {
     return concepto;
   },
 
-  async create(data: { descripcion: string; cuentaContable: string; estado?: boolean }) {
+  async create(data: { descripcion: string; cuentaDebitoId: number; cuentaCreditoId: number; estado?: boolean }) {
     return prisma.conceptoPago.create({ data });
   },
 
-  async update(id: number, data: Partial<{ descripcion: string; cuentaContable: string; estado: boolean }>) {
+  async update(
+    id: number,
+    data: Partial<{ descripcion: string; cuentaDebitoId: number; cuentaCreditoId: number; estado: boolean }>
+  ) {
     await this.getById(id);
     return prisma.conceptoPago.update({ where: { id }, data });
   },

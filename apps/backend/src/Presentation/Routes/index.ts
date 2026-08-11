@@ -3,6 +3,7 @@ import { authController } from '../Controllers/authController';
 import { conceptoController } from '../Controllers/conceptoController';
 import { proveedorController } from '../Controllers/proveedorController';
 import { documentoController } from '../Controllers/documentoController';
+import { contabilidadController } from '../Controllers/contabilidadController';
 import { authMiddleware } from '../../Infrastructure/Middlewares/authMiddleware';
 import { requireRole } from '../../Infrastructure/Middlewares/roleMiddleware';
 
@@ -36,5 +37,8 @@ router.post('/documentos/:id/contabilizar', authMiddleware, documentoController.
 
 // Consultas
 router.get('/consultas/balances', authMiddleware, documentoController.getBalances);
+
+// Contabilidad (WS externo)
+router.get('/contabilidad/cuentas', authMiddleware, contabilidadController.listCuentas);
 
 export default router;

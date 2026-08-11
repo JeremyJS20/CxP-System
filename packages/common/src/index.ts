@@ -21,7 +21,8 @@ export type RegisterPayload = z.infer<typeof RegisterSchema>;
 // ─── Concepto de Pago ───
 export const CreateConceptoSchema = z.object({
   descripcion: z.string().min(1, 'Descripción es requerida').max(255),
-  cuentaContable: z.string().min(1, 'Cuenta contable es requerida').max(50),
+  cuentaDebitoId: z.number().int().positive('Cuenta débito es requerida'),
+  cuentaCreditoId: z.number().int().positive('Cuenta crédito es requerida'),
   estado: z.boolean().default(true),
 });
 export const UpdateConceptoSchema = CreateConceptoSchema.partial();
@@ -79,14 +80,12 @@ export const DocumentoFilterSchema = z.object({
 });
 
 // ─── Asiento Contable (Integración con Contabilidad) ───
+// Formato del WS de Contabilidad: una línea por asiento, el WS genera débito y crédito
 export const AsientoContableSchema = z.object({
-  idAsiento: z.number().int(),
+  auxiliarId: z.number().int(),
+  cuentaDebitoId: z.number().int().positive(),
+  cuentaCreditoId: z.number().int().positive(),
   descripcion: z.string().min(1).max(255),
-  idTipoInventario: z.number().int(),
-  cuentaContable: z.string().min(1).max(50),
-  tipoMovimiento: z.enum(['DB', 'CR']),
-  fechaAsiento: z.string().datetime().or(z.string().date()),
-  montoAsiento: z.number().positive(),
-  estado: z.enum(['REGISTRADO', 'ANULADO']).default('REGISTRADO'),
+  monto: z.number().positive(),
 });
 export type AsientoContable = z.infer<typeof AsientoContableSchema>;

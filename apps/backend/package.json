@@ -17,7 +17,7 @@
     "dotenv": "^16.4.5",
     "zod": "^3.23.8",
     "@prisma/client": "^5.22.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
     "@cxp/common": "*"
   },
@@ -29,7 +29,6 @@
     "tsx": "^4.19.0",
     "@types/express": "^5.0.0",
     "@types/cors": "^2.8.17",
-    "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
     "typescript": "^5.7.0"
   }

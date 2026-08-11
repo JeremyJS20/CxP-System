@@ -18,6 +18,7 @@ export default function DocumentosPage() {
   const [editItem, setEditItem] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [contabilizandoId, setContabilizandoId] = useState<number | null>(null);
   const [search, setSearch] = useState('');
 
   const [noDocumento, setNoDocumento] = useState('');
@@ -98,12 +99,14 @@ export default function DocumentosPage() {
   };
 
   const handleContabilizar = async (id: number) => {
+    setContabilizandoId(id);
     try {
       const res = await contabilizar(id);
       showToast(res?.message || 'Documento contabilizado', 'success');
     } catch (err: any) {
       showToast(err.message, 'error');
     }
+    setContabilizandoId(null);
   };
 
   const filtered = documentos.filter((d: any) =>
@@ -143,12 +146,13 @@ export default function DocumentosPage() {
                 <th>Concepto</th>
                 <th>Monto</th>
                 <th>Estado</th>
+                <th>Contable</th>
                 <th style={{ width: 200 }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-tertiary)' }}>Sin documentos registrados</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-tertiary)' }}>Sin documentos registrados</td></tr>
               )}
               {filtered.map((d: any) => (
                 <tr key={d.id}>
@@ -164,11 +168,48 @@ export default function DocumentosPage() {
                   </td>
                   <td><StatusBadge estado={d.estado} /></td>
                   <td>
+                    {d.estadoContable === 'CONTABILIZADO' && d.respuestaContable ? (
+                      <span className="tooltip-wrap" tabIndex={0}>
+                        <StatusBadge estado="CONTABILIZADO" />
+                        <span className="tooltip" role="tooltip">
+                          <h4>Asiento Contable</h4>
+                          <dl>
+                            <dt>No. Asiento</dt>
+                            <dd style={{ fontFamily: 'var(--font-mono)' }}>#{d.respuestaContable.numeroAsiento}</dd>
+                            <dt>Fecha</dt>
+                            <dd>{d.respuestaContable.fecha}</dd>
+                            <dt>Auxiliar</dt>
+                            <dd>{d.respuestaContable.auxiliar}</dd>
+                            <dt>Cuenta Débito</dt>
+                            <dd>{d.respuestaContable.cuentaDebito}</dd>
+                            <dt>Cuenta Crédito</dt>
+                            <dd>{d.respuestaContable.cuentaCredito}</dd>
+                            <dt>Monto</dt>
+                            <dd>${Number(d.respuestaContable.monto).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</dd>
+                            <dt>Estado WS</dt>
+                            <dd>{d.respuestaContable.estado}</dd>
+                          </dl>
+                        </span>
+                      </span>
+                    ) : (
+                      <StatusBadge estado={d.estadoContable || 'PENDIENTE'} />
+                    )}
+                  </td>
+                  <td>
                     <div style={{ display: 'flex', gap: 4 }}>
-                      {d.estado === 'PENDIENTE' && (
+                      {d.estadoContable !== 'CONTABILIZADO' && (
                         <>
-                          <button className="btn btn-primary btn-sm" onClick={() => handleContabilizar(d.id)} title="Enviar a Contabilidad">
-                            <BookOpen size={15} /> Contab.
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleContabilizar(d.id)}
+                            disabled={contabilizandoId !== null}
+                            title="Enviar a Contabilidad"
+                          >
+                            {contabilizandoId === d.id ? (
+                              <span style={{ fontSize: '0.75rem' }}>Enviando...</span>
+                            ) : (
+                              <BookOpen size={15} />
+                            )}
                           </button>
                           <div style={{ width: 1, height: 20, background: 'var(--surface-border)', margin: '0 4px' }} />
                         </>

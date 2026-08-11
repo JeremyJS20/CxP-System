@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -20,16 +20,17 @@ async function main() {
   console.log('Admin: admin@cxp.com / 123456');
 
   // ── Conceptos de Pago ──
+  // Cuentas del WS de Contabilidad: 4=Gasto de Nómina (501), 2=CxP (201)
   const conceptosData = [
-    { descripcion: 'Servicios', cuentaContable: '501-01' },
-    { descripcion: 'Mercancía', cuentaContable: '101-01' },
-    { descripcion: 'Alquiler', cuentaContable: '501-02' },
-    { descripcion: 'Servicios Profesionales', cuentaContable: '502-01' },
-    { descripcion: 'Materiales y Suministros', cuentaContable: '101-02' },
+    { descripcion: 'Servicios', cuentaDebitoId: 4, cuentaCreditoId: 2 },
+    { descripcion: 'Mercancía', cuentaDebitoId: 4, cuentaCreditoId: 2 },
+    { descripcion: 'Alquiler', cuentaDebitoId: 4, cuentaCreditoId: 2 },
+    { descripcion: 'Servicios Profesionales', cuentaDebitoId: 4, cuentaCreditoId: 2 },
+    { descripcion: 'Materiales y Suministros', cuentaDebitoId: 4, cuentaCreditoId: 2 },
   ];
 
   for (const c of conceptosData) {
-    const existe = await prisma.conceptoPago.findFirst({ where: { cuentaContable: c.cuentaContable } });
+    const existe = await prisma.conceptoPago.findFirst({ where: { descripcion: c.descripcion } });
     if (!existe) {
       await prisma.conceptoPago.create({ data: c });
     }

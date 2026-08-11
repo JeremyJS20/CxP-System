@@ -6,6 +6,7 @@ const statusConfig: Record<string, { className: string; label: string }> = {
   PENDIENTE: { className: 'badge badge-warning', label: 'Pendiente' },
   PAGADO: { className: 'badge badge-primary', label: 'Pagado' },
   CANCELADO: { className: 'badge badge-error', label: 'Cancelado' },
+  CONTABILIZADO: { className: 'badge badge-primary', label: 'Contabilizado' },
   true: { className: 'badge badge-primary', label: 'Activo' },
   false: { className: 'badge badge-muted', label: 'Inactivo' },
 };
