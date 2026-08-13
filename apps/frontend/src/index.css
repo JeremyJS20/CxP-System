@@ -29,9 +29,6 @@
   --color-muted: var(--accent-muted);
 }
 
-@plugin "./heroui.ts";
-@source "../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
-
 :root {
   --surface-base: #F0F4F8;
   --surface-card: rgba(255, 255, 255, 0.85);
@@ -228,7 +225,8 @@ body {
   background: var(--surface-card);
   border: 1px solid var(--surface-border);
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 .table-container table {
   width: 100%;
@@ -290,26 +288,56 @@ body {
 }
 
 /* ── Tooltip ── */
-.tooltip-content h4 {
+.tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 1002;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 150ms ease, visibility 150ms ease;
+  pointer-events: none;
+}
+.tooltip-wrap:hover .tooltip,
+.tooltip-wrap:focus-within .tooltip {
+  opacity: 1;
+  visibility: visible;
+  animation: fadeSlideUp 100ms ease;
+}
+.tooltip h4 {
   margin: 0 0 8px;
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-tertiary);
 }
-.tooltip-content dl {
+.tooltip dl {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.tooltip-content dt {
+.tooltip dt {
   color: var(--text-tertiary);
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.tooltip-content dd {
+.tooltip dd {
   margin: 0 0 2px;
   color: var(--text-primary);
   font-weight: 600;
