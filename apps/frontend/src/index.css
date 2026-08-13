@@ -287,56 +287,26 @@ body {
 }
 
 /* ── Tooltip ── */
-.tooltip-wrap {
-  position: relative;
-  display: inline-flex;
-}
-.tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 220px;
-  background: var(--surface-elevated);
-  border: 1px solid var(--surface-border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  z-index: 1002;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 150ms ease, visibility 150ms ease;
-  pointer-events: none;
-}
-.tooltip-wrap:hover .tooltip,
-.tooltip-wrap:focus-within .tooltip {
-  opacity: 1;
-  visibility: visible;
-  animation: fadeSlideUp 100ms ease;
-}
-.tooltip h4 {
+.tooltip-content h4 {
   margin: 0 0 8px;
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-tertiary);
 }
-.tooltip dl {
+.tooltip-content dl {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.tooltip dt {
+.tooltip-content dt {
   color: var(--text-tertiary);
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.tooltip dd {
+.tooltip-content dd {
   margin: 0 0 2px;
   color: var(--text-primary);
   font-weight: 600;

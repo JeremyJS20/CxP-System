@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Plus, Edit2, Trash2, BookOpen, Search } from 'lucide-react';
+import { Tooltip } from '@heroui/react';
 import { useDocumentos } from '@/Presentation/Hooks/useDocumentos';
 import { useConceptos } from '@/Presentation/Hooks/useConceptos';
 import { useProveedores } from '@/Presentation/Hooks/useProveedores';
@@ -169,28 +170,33 @@ export default function DocumentosPage() {
                   <td><StatusBadge estado={d.estado} /></td>
                   <td>
                     {d.estadoContable === 'CONTABILIZADO' && d.respuestaContable ? (
-                      <span className="tooltip-wrap" tabIndex={0}>
+                      <Tooltip
+                        showArrow
+                        placement="top"
+                        content={
+                          <div className="tooltip-content">
+                            <h4>Asiento Contable</h4>
+                            <dl>
+                              <dt>No. Asiento</dt>
+                              <dd style={{ fontFamily: 'var(--font-mono)' }}>#{d.respuestaContable.numeroAsiento}</dd>
+                              <dt>Fecha</dt>
+                              <dd>{d.respuestaContable.fecha}</dd>
+                              <dt>Auxiliar</dt>
+                              <dd>{d.respuestaContable.auxiliar}</dd>
+                              <dt>Cuenta Débito</dt>
+                              <dd>{d.respuestaContable.cuentaDebito}</dd>
+                              <dt>Cuenta Crédito</dt>
+                              <dd>{d.respuestaContable.cuentaCredito}</dd>
+                              <dt>Monto</dt>
+                              <dd>${Number(d.respuestaContable.monto).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</dd>
+                              <dt>Estado WS</dt>
+                              <dd>{d.respuestaContable.estado}</dd>
+                            </dl>
+                          </div>
+                        }
+                      >
                         <StatusBadge estado="CONTABILIZADO" />
-                        <span className="tooltip" role="tooltip">
-                          <h4>Asiento Contable</h4>
-                          <dl>
-                            <dt>No. Asiento</dt>
-                            <dd style={{ fontFamily: 'var(--font-mono)' }}>#{d.respuestaContable.numeroAsiento}</dd>
-                            <dt>Fecha</dt>
-                            <dd>{d.respuestaContable.fecha}</dd>
-                            <dt>Auxiliar</dt>
-                            <dd>{d.respuestaContable.auxiliar}</dd>
-                            <dt>Cuenta Débito</dt>
-                            <dd>{d.respuestaContable.cuentaDebito}</dd>
-                            <dt>Cuenta Crédito</dt>
-                            <dd>{d.respuestaContable.cuentaCredito}</dd>
-                            <dt>Monto</dt>
-                            <dd>${Number(d.respuestaContable.monto).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</dd>
-                            <dt>Estado WS</dt>
-                            <dd>{d.respuestaContable.estado}</dd>
-                          </dl>
-                        </span>
-                      </span>
+                      </Tooltip>
                     ) : (
                       <StatusBadge estado={d.estadoContable || 'PENDIENTE'} />
                     )}
